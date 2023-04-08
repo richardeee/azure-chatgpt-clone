@@ -1,0 +1,9 @@
+az webapp config appsettings set --resource-group rg-openaidemo --name azurechatgptclone --settings WEBSITES_ENABLE_APP_SERVICE_STORAGE=TRUE
+
+az webapp config container set --resource-group rg-openaidemo --name azurechatgptclone --multicontainer-config-type compose --multicontainer-config-file docker-compose.yml
+
+https://azurechatgptclone.scm.azurewebsites.net/api/logs/docker
+
+curl -X GET 'http://localhost:7700//keys' -H 'Authorization: Bearer JKMW-hGc7v_D1FkJVdbRSDNFLZcUv3S75yrxXP0SmcU' | jq
+
+AG8R5sSN62AnP3kDICAur2D0-HyP7W5J9smlLVw9k5M
