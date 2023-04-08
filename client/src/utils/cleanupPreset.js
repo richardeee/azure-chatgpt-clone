@@ -6,7 +6,7 @@ const cleanupPreset = ({ preset: _preset, endpointsFilter = {} }) => {
     preset = {
       endpoint,
       presetId: _preset?.presetId ?? null,
-      model: _preset?.model ?? endpointsFilter[endpoint]?.availableModels?.[0] ?? 'gpt-3.5-turbo',
+      model: _preset?.model ?? endpointsFilter[endpoint]?.availableModels?.[0] ?? 'gpt-35-turbo',
       chatGptLabel: _preset?.chatGptLabel ?? null,
       promptPrefix: _preset?.promptPrefix ?? null,
       temperature: _preset?.temperature ?? 1,

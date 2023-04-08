@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const getOpenAIModels = () => {
-  let models = ['gpt-4', 'text-davinci-003', 'gpt-3.5-turbo', 'gpt-3.5-turbo-0301'];
+  let models = ['gpt-4', 'text-davinci-003', 'gpt-35-turbo', 'gpt-35-turbo-0301'];
   if (process.env.OPENAI_MODELS) models = String(process.env.OPENAI_MODELS).split(',');
 
   return models;

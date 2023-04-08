@@ -9,7 +9,7 @@ const buildDefaultConversation = ({
       ...conversation,
       endpoint,
       model:
-        lastConversationSetup?.model ?? endpointsFilter[endpoint]?.availableModels?.[0] ?? 'gpt-3.5-turbo',
+        lastConversationSetup?.model ?? endpointsFilter[endpoint]?.availableModels?.[0] ?? 'gpt-35-turbo',
       chatGptLabel: lastConversationSetup?.chatGptLabel ?? null,
       promptPrefix: lastConversationSetup?.promptPrefix ?? null,
       temperature: lastConversationSetup?.temperature ?? 1,

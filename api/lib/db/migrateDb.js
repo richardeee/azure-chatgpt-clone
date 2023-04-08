@@ -74,10 +74,10 @@ const migrateToSupportBetterCustomization = async () => {
 
       if (originalModel === 'chatgpt') {
         convo.endpoint = 'openAI';
-        convo.model = 'gpt-3.5-turbo';
+        convo.model = 'gpt-35-turbo';
       } else if (originalModel === 'chatgptCustom') {
         convo.endpoint = 'openAI';
-        convo.model = 'gpt-3.5-turbo';
+        convo.model = 'gpt-35-turbo';
       } else if (originalModel === 'bingai') {
         convo.endpoint = 'bingAI';
         convo.model = null;
@@ -92,7 +92,7 @@ const migrateToSupportBetterCustomization = async () => {
         convo.jailbreak = true;
       } else {
         convo.endpoint = 'openAI';
-        convo.model = 'gpt-3.5-turbo';
+        convo.model = 'gpt-35-turbo';
       }
 
       promises.push(convo.save());

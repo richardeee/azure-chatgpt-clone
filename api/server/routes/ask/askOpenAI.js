@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
 
   // build endpoint option
   const endpointOption = {
-    model: req.body?.model ?? 'gpt-3.5-turbo',
+    model: req.body?.model ?? 'gpt-35-turbo',
     chatGptLabel: req.body?.chatGptLabel ?? null,
     promptPrefix: req.body?.promptPrefix ?? null,
     temperature: req.body?.temperature ?? 1,

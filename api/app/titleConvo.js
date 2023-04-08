@@ -41,7 +41,7 @@ const titleConvo = async ({ endpoint, text, response }) => {
   // console.log('Title Prompt', messages[0]);
 
   const request = {
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-35-turbo',
     messages,
     temperature: 0,
     presence_penalty: 0,

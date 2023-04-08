@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { KeyvFile } = require('keyv-file');
-// const set = new Set(['gpt-4', 'text-davinci-003', 'gpt-3.5-turbo', 'gpt-3.5-turbo-0301']);
+
+const AzureChatGPTClient = require('./azure-chatgpt-api');
 
 const askClient = async ({
   text,
@@ -16,7 +17,7 @@ const askClient = async ({
   onProgress,
   abortController
 }) => {
-  const ChatGPTClient = (await import('./azure-chatgpt-api.js')).default;
+  const ChatGPTClient = AzureChatGPTClient;
   const store = {
     store: new KeyvFile({ filename: './data/cache.json' })
   };

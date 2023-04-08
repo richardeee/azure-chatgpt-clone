@@ -29,7 +29,7 @@ const useMessageHandler = () => {
       endpointOption = {
         endpoint,
         model:
-          currentConversation?.model ?? endpointsFilter[endpoint]?.availableModels?.[0] ?? 'gpt-3.5-turbo',
+          currentConversation?.model ?? endpointsFilter[endpoint]?.availableModels?.[0] ?? 'gpt-35-turbo',
         chatGptLabel: currentConversation?.chatGptLabel ?? null,
         promptPrefix: currentConversation?.promptPrefix ?? null,
         temperature: currentConversation?.temperature ?? 1,

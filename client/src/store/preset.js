@@ -9,7 +9,7 @@ import { atom } from 'recoil';
 //   // endpoint: [azureOpenAI, openAI, bingAI, chatGPTBrowser]
 //   endpoint: 'azureOpenAI',
 //   // for azureOpenAI, openAI, chatGPTBrowser only
-//   model: 'gpt-3.5-turbo',
+//   model: 'gpt-35-turbo',
 //   // for azureOpenAI, openAI only
 //   chatGptLabel: null,
 //   promptPrefix: null,
