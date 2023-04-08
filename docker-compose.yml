@@ -33,9 +33,9 @@ services:
       - MEILI_HOST=http://meilisearch:7700
       - MEILI_HTTP_ADDR=meilisearch:7700
     volumes:
-      - /client/node_modules
-      - ./api:/api
-      - /api/node_modules
+      - ${WEBAPP_STORAGE_HOME}/client/node_modules:/client/node_modules
+      - ${WEBAPP_STORAGE_HOME}/api:/api
+      - ${WEBAPP_STORAGE_HOME}/api/node_modules:/api/node_modules
   mongodb:
     ports:
       - 27018:27017
@@ -43,7 +43,7 @@ services:
     restart: always
     container_name: mongodb
     volumes:
-      - ./data-node:/data/db
+      - ${WEBAPP_STORAGE_HOME}/data-node:/data/db
     command: mongod --noauth
   meilisearch:
     image: getmeili/meilisearch:v1.0
