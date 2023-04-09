@@ -1,0 +1,166 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "mongoContainerName":{
+		"type": "string",
+		"defaultValue": "mongo"
+	},
+    "mongoImage": {
+      "type": "string",
+      "defaultValue": "mongo"
+    },
+	"mongoPort": {
+      "type": "int",
+      "defaultValue": 27017,
+      "metadata": {
+        "description": "Port to open on the container and the public IP address."
+      }
+    },
+	"meilisearchContainerName":{
+		"type": "string",
+		"defaultValue": "meilisearch"
+	},
+	"meilisearchImage":{
+		"type": "string",
+		"defaultValue": "getmeili/meilisearch:v1.0"
+	},
+	"meilisearchPort":{
+		"type": "int",
+		"defaultValue": 7700,
+		"metadata": {
+			"description": "Port for meilisearch server, default is 7700"
+		}
+	},
+    "containerCpuCount": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "containerMemory": {
+      "type": "int",
+      "defaultValue": 2,
+	  "metadata": {
+		  "description": "Container memory in GB"
+	  }
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "defaultValue": "my-service-plan"
+    },
+    "appServiceSkuTier": {
+      "type": "string",
+      "defaultValue": "Standard"
+    },
+    "appServiceSkuSize": {
+      "type": "string",
+      "defaultValue": "S1" 
+    },
+    "appServiceName": {
+      "type": "string",
+      "defaultValue": "my-app-service"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2018-10-01",
+      "name": "[parameters('mongoContainerName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "containers": [
+          {
+            "name": "mongo",
+            "properties": {
+              "image": "[parameters('mongoImage')]",
+			  "ports": [
+                {
+                  "port": "[parameters('mongoPort')]",
+                  "protocol": "TCP"
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "[parameters('containerCpuCount')]",
+                  "memoryInGB": "[parameters('containerMemory')]"
+                }
+              }
+            }
+          }
+        ],
+        "osType": "Linux",
+        "restartPolicy": "OnFailure",
+		"ipAddress": {
+          "type": "Public",
+          "ports": [
+            {
+              "port": "[parameters('mongoPort')]",
+              "protocol": "TCP"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2018-10-01",
+      "name": "[parameters('meilisearchContainerName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "containers": [
+          {
+            "name": "meilisearch",
+            "properties": {
+              "image": "[parameters('meilisearchImage')]",
+			  "ports": [
+                {
+                  "port": "[parameters('meilisearchPort')]",
+                  "protocol": "TCP"
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "[parameters('containerCpuCount')]",
+                  "memoryInGB": "[parameters('containerMemory')]"
+                }
+              }
+            }
+          }
+        ],
+        "osType": "Linux",
+        "restartPolicy": "OnFailure",
+		"ipAddress": {
+          "type": "Public",
+          "ports": [
+            {
+              "port": "[parameters('meilisearchPort')]",
+              "protocol": "TCP"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2018-02-01",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[parameters('appServiceSkuSize')]",
+        "tier": "[parameters('appServiceSkuTier')]",
+        "capacity": 1
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('appServiceName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      }
+    }
+  ]
+}

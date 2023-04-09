@@ -15,10 +15,10 @@ services:
   #     - api
   api:
     ports:
-      - 80:3080               # Change it to 9000:3080 if you want to use nginx
+      - 3080:3080               # Change it to 9000:3080 if you want to use nginx
     depends_on:
       - mongodb
-    image: alfredzouregistrysouthcentralus.azurecr.io/chatgpt-node-api:v1.1
+    image: node-api
     build:
       context: .
       target: node-api
@@ -33,20 +33,20 @@ services:
       - MEILI_HOST=http://meilisearch:7700
       - MEILI_HTTP_ADDR=meilisearch:7700
     volumes:
-      - ${WEBAPP_STORAGE_HOME}/client/node_modules:/client/node_modules
-      - ${WEBAPP_STORAGE_HOME}/api:/api
-      - ${WEBAPP_STORAGE_HOME}/api/node_modules:/api/node_modules
+      - /client/node_modules
+      - ./api:/api
+      - /api/node_modules
   mongodb:
     ports:
       - 27018:27017
-    image: alfredzouregistrysouthcentralus.azurecr.io/mongo
+    image: mongo
     restart: always
     container_name: mongodb
     volumes:
-      - ${WEBAPP_STORAGE_HOME}/data-node:/data/db
+      - ./data-node:/data/db
     command: mongod --noauth
   meilisearch:
-    image: alfredzouregistrysouthcentralus.azurecr.io/meilisearch:v1.0
+    image: getmeili/meilisearch:v1.0
     ports:
       - 7700:7700
     env_file:
@@ -55,4 +55,4 @@ services:
       - MEILI_HOST=http://meilisearch:7700
       - MEILI_HTTP_ADDR=meilisearch:7700
     volumes:
-      - ${WEBAPP_STORAGE_HOME}/meili_data:/meili_data
+      - ./meili_data:/meili_data

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "mongoContainerName": {
+      "value": "mongo"
+    },
+    "mongoImage": {
+      "value": "mongo"
+    },
+    "mongoPort": {
+      "value": 27017
+    },
+    "meilisearchContainerName": {
+      "value": "meilisearch"
+    },
+    "meilisearchImage": {
+      "value": "getmeili/meilisearch:v1.0"
+    },
+    "meilisearchPort": {
+      "value": 7700
+    },
+    "containerCpuCount": {
+      "value": 1
+    },
+    "containerMemory": {
+      "value": 2
+    },
+    "appServicePlanName": {
+      "value": "my-service-plan"
+    },
+    "appServiceSkuTier": {
+      "value": "Standard"
+    },
+    "appServiceSkuSize": {
+      "value": "S1"
+    },
+    "appServiceName": {
+      "value": "my-app-service"
+    }
+  }
+}
