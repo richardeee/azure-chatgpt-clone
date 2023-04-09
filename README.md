@@ -21,6 +21,8 @@
 > **IMPORTANT NOTE:** **DO NOT USE** Azure App Service Docker Compose feature, it's still in preview and not working. 
 > You need to create a new Azure App Service and set the environment variables manually.
 
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Frichardeee%2Fazure-chatgpt-clone%2Fmain%2Ftemplate%2Ftemplate.json)
+
 1. Create a new Azure Container Service for Mongo:
 ```bash
 az group create --name chatgpt-clone --location southcentralus
