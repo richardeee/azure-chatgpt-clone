@@ -2,14 +2,17 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "ResourcePrefix": {
+      "type": "string",
+      "defaultValue": "chatgpt-",
+      "metadata": {
+        "description": "provide a 2-13 character prefix for all resources."
+      }
+    },
     "mongoContainerName":{
 		"type": "string",
 		"defaultValue": "mongo"
 	},
-    "mongoImage": {
-      "type": "string",
-      "defaultValue": "mongo"
-    },
 	"mongoPort": {
       "type": "int",
       "defaultValue": 27017,
@@ -20,10 +23,6 @@
 	"meilisearchContainerName":{
 		"type": "string",
 		"defaultValue": "meilisearch"
-	},
-	"meilisearchImage":{
-		"type": "string",
-		"defaultValue": "getmeili/meilisearch:v1.0"
 	},
 	"meilisearchPort":{
 		"type": "int",
@@ -45,33 +44,73 @@
     },
     "appServicePlanName": {
       "type": "string",
-      "defaultValue": "my-service-plan"
+      "defaultValue": "my-plan"
     },
-    "appServiceSkuTier": {
+    "appServicePlanSkuTier": {
       "type": "string",
-      "defaultValue": "Standard"
-    },
-    "appServiceSkuSize": {
-      "type": "string",
-      "defaultValue": "S1" 
+      "defaultValue": "P1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ]
     },
     "appServiceName": {
       "type": "string",
-      "defaultValue": "my-app-service"
+      "defaultValue": "my-site"
+    },
+    "OpenAIBaseURL": {
+      "type": "string",
+	  "defaultValue": "https://<your openai resource>.openai.azure.com",
+      "metadata": {
+        "description": "Base URL of OpenAI Resource"
+      }
+    },
+    "OpenAIKey": {
+      "type": "securestring",
+      "defaultValue": "sk-",
+      "metadata": {
+        "description": "OpenAI API Key"
+      }
+    },
+    "OpenAIModels": {
+      "type": "string",
+      "defaultValue": "gpt-4,text-davinci-003,gpt-35-turbo,gpt-4-32k",
+      "metadata": {
+        "description": "OpenAI Models"
+      }
+    },
+    "newGuid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
     }
+  },
+  "variables": {
+    "WebAppImageName": "DOCKER|richardeee/chatgpt-clone:latest",
+    "MongoImageName": "mongo",
+    "MeilisearchImageName": "getmeili/meilisearch:v1.0"
   },
   "resources": [
     {
       "type": "Microsoft.ContainerInstance/containerGroups",
-      "apiVersion": "2018-10-01",
-      "name": "[parameters('mongoContainerName')]",
+      "apiVersion": "2021-10-01",
+      "name": "[concat(parameters('ResourcePrefix'),parameters('mongoContainerName'),'-',parameters('newGuid'))]",
       "location": "[resourceGroup().location]",
       "properties": {
         "containers": [
           {
             "name": "mongo",
             "properties": {
-              "image": "[parameters('mongoImage')]",
+              "image": "[variables('MongoImageName')]",
 			  "ports": [
                 {
                   "port": "[parameters('mongoPort')]",
@@ -102,15 +141,15 @@
     },
     {
       "type": "Microsoft.ContainerInstance/containerGroups",
-      "apiVersion": "2018-10-01",
-      "name": "[parameters('meilisearchContainerName')]",
+      "apiVersion": "2021-10-01",
+      "name": "[concat(parameters('ResourcePrefix'),parameters('meilisearchContainerName'),'-',parameters('newGuid'))]",
       "location": "[resourceGroup().location]",
       "properties": {
         "containers": [
           {
             "name": "meilisearch",
             "properties": {
-              "image": "[parameters('meilisearchImage')]",
+              "image": "[variables('MeilisearchImageName')]",
 			  "ports": [
                 {
                   "port": "[parameters('meilisearchPort')]",
@@ -142,24 +181,49 @@
     {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
-      "name": "[parameters('appServicePlanName')]",
+      "name": "[concat(parameters('ResourcePrefix'),parameters('appServicePlanName'),'-',parameters('newGuid'))]",
       "location": "[resourceGroup().location]",
       "sku": {
-        "name": "[parameters('appServiceSkuSize')]",
-        "tier": "[parameters('appServiceSkuTier')]",
-        "capacity": 1
+        "tier": "[parameters('appServicePlanSkuTier')]"
+      },
+      "kind": "linux",
+      "properties": {
+        "reserved": true
       }
     },
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
-      "name": "[parameters('appServiceName')]",
+      "name": "[concat(parameters('ResourcePrefix'),parameters('appServiceName'),'-',parameters('newGuid'))]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]"
+        "[resourceId('Microsoft.Web/serverfarms/', concat(parameters('ResourcePrefix'),parameters('appServicePlanName'),'-',parameters('newGuid')))]",
+        "[resourceId('Microsoft.ContainerInstance/containerGroups', concat(parameters('ResourcePrefix'),parameters('mongoContainerName'),'-',parameters('newGuid')))]",
+        "[resourceId('Microsoft.ContainerInstance/containerGroups', concat(parameters('ResourcePrefix'),parameters('meilisearchContainerName'),'-',parameters('newGuid')))]"
       ],
       "properties": {
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "[variables('WebAppImageName')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}/{1}', parameters('appServiceName'), 'appsettings','-',parameters('newGuid'))]",
+      "kind": "string",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', concat(parameters('ResourcePrefix'),parameters('appServiceName'),'-',parameters('newGuid')))]"
+      ],
+      "properties": {
+        "OPENAI_MODELS": "[parameters('OpenAIModels')]",
+        "OPENAI_API_BASE": "parameters('OpenAIBaseURL')]",
+        "OPENAI_API_KEY": "[parameters('OpenAIKey')]",
+        "MONGO_URL": "[concat('mongodb://', reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('mongoContainerName')), '2018-10-01').ipAddress.ip, ':', parameters('mongoPort'))]",
+        "MEILI_HOST":"[concat('http://', reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('meilisearchContainerName')), '2018-10-01').ipAddress.ip, ':', parameters('meilisearchPort'))]",
+        "MEILI_HTTP_ADDR":"[concat(reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('meilisearchContainerName')), '2018-10-01').ipAddress.ip, ':', parameters('meilisearchPort'))]",
+        "SEARCH": 1
       }
     }
   ]
