@@ -11,7 +11,7 @@
     },
     "mongoContainerName":{
 		"type": "string",
-		"defaultValue": "mongo"
+		"defaultValue": "[concat(parameters('ResourcePrefix'),'mongo-',parameters('newGuid'))]"
 	},
 	"mongoPort": {
       "type": "int",
@@ -22,7 +22,7 @@
     },
 	"meilisearchContainerName":{
 		"type": "string",
-		"defaultValue": "meilisearch"
+		"defaultValue": "[concat(parameters('ResourcePrefix'),'meilisearch-',parameters('newGuid'))]"
 	},
 	"meilisearchPort":{
 		"type": "int",
@@ -44,7 +44,7 @@
     },
     "appServicePlanName": {
       "type": "string",
-      "defaultValue": "my-plan"
+      "defaultValue": "[concat(parameters('ResourcePrefix'),'my-plan')]"
     },
     "appServicePlanSkuTier": {
       "type": "string",
@@ -66,7 +66,7 @@
     },
     "appServiceName": {
       "type": "string",
-      "defaultValue": "my-site"
+      "defaultValue": "[concat(parameters('ResourcePrefix'),'my-site']"
     },
     "OpenAIBaseURL": {
       "type": "string",
@@ -103,7 +103,7 @@
     {
       "type": "Microsoft.ContainerInstance/containerGroups",
       "apiVersion": "2021-10-01",
-      "name": "[concat(parameters('ResourcePrefix'),parameters('mongoContainerName'),'-',parameters('newGuid'))]",
+      "name": "[parameters('mongoContainerName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "containers": [
@@ -142,7 +142,7 @@
     {
       "type": "Microsoft.ContainerInstance/containerGroups",
       "apiVersion": "2021-10-01",
-      "name": "[concat(parameters('ResourcePrefix'),parameters('meilisearchContainerName'),'-',parameters('newGuid'))]",
+      "name": "[parameters('meilisearchContainerName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "containers": [
@@ -181,7 +181,7 @@
     {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
-      "name": "[concat(parameters('ResourcePrefix'),parameters('appServicePlanName'),'-',parameters('newGuid'))]",
+      "name": "[parameters('appServicePlanName')]",
       "location": "[resourceGroup().location]",
       "sku": {
         "tier": "[parameters('appServicePlanSkuTier')]"
@@ -194,12 +194,12 @@
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
-      "name": "[concat(parameters('ResourcePrefix'),parameters('appServiceName'),'-',parameters('newGuid'))]",
+      "name": "[parameters('appServiceName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms/', concat(parameters('ResourcePrefix'),parameters('appServicePlanName'),'-',parameters('newGuid')))]",
-        "[resourceId('Microsoft.ContainerInstance/containerGroups', concat(parameters('ResourcePrefix'),parameters('mongoContainerName'),'-',parameters('newGuid')))]",
-        "[resourceId('Microsoft.ContainerInstance/containerGroups', concat(parameters('ResourcePrefix'),parameters('meilisearchContainerName'),'-',parameters('newGuid')))]"
+        "[resourceId('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
+        "[resourceId('Microsoft.ContainerInstance/containerGroups/', parameters('mongoContainerName'))]",
+        "[resourceId('Microsoft.ContainerInstance/containerGroups/', parameters('meilisearchContainerName'))]"
       ],
       "properties": {
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
@@ -211,7 +211,7 @@
     {
       "type": "Microsoft.Web/sites/config",
       "apiVersion": "2021-03-01",
-      "name": "[format('{0}/{1}', parameters('appServiceName'), 'appsettings','-',parameters('newGuid'))]",
+      "name": "[format('{0}/{1}', parameters('appServiceName'), 'appsettings')]",
       "kind": "string",
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites', concat(parameters('ResourcePrefix'),parameters('appServiceName'),'-',parameters('newGuid')))]"
