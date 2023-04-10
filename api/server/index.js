@@ -3,6 +3,7 @@ const session = require('express-session');
 const connectDb = require('../lib/db/connectDb');
 const migrateDb = require('../lib/db/migrateDb');
 const indexSync = require('../lib/db/indexSync');
+
 const path = require('path');
 const cors = require('cors');
 const routes = require('./routes');

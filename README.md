@@ -102,11 +102,29 @@ az webapp config appsettings set --resource-group chatgpt-clone --name chatgpt-c
 
 ### User System
 
-By default, there is no user system enabled, so anyone can access your server.
+This project is enabled with Azure AD authentication.
 
-**This project is not designed to provide a complete and full-featured user system.** It's not high priority task and might never be provided.
+#### How to enable Azure AD authentication
+Step 1: Create an Azure AD application
+Follow the steps in [Create an Azure AD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) to create an Azure AD application.
 
-[wtlyu](https://github.com/wtlyu) provide a sample user system structure, that you can implement your own user system. It's simple and not a ready-for-use edition. 
+Or use Azure CLI to create an Azure AD application:
+```bash
+az ad app create --display-name "chatgpt-clone" --reply-urls "https://chatgpt-clone.azurewebsites.net/auth/azuread/openid/return" 
+```
+> :information_source: Note: The reply URL is the URL of your application. For example, if your application is running on localhost:3080, the reply URL is http://localhost:3080/auth/azuread/openid/return.
+
+Step 2: Modify the environment variables in App Service 
+- Set `ENABLE_USER_SYSTEM=1`
+- Set `AZURE_AD_CLIENT_ID` to the Application (client) ID of your Azure AD application.
+- Set `AZURE_AD_CLIENT_SECRET` to the client secret of your Azure AD application.
+- Set `AZURE_AD_TENANT_ID` to the tenant ID of your Azure AD application.
+- Set `AZURE_AD_CALLBACK_URL` to the reply URL of your Azure AD application.
+Or use Azure CLI:
+```bash
+az webapp config appsettings set --resource-group chatgpt-clone --name chatgpt-clone --settings ENABLE_USER_SYSTEM=1 AZURE_AD_CLIENT_ID=<your azure ad client id> AZURE_AD_CLIENT_SECRET=<your azure ad client secret> AZURE_AD_TENANT_ID=<your azure ad tenant id> AZURE_AD_CALLBACK_URL=<your azure ad callback url>
+```
+
 
 (If you want to implement your user system, open this ↓)
 
